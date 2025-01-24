@@ -1,0 +1,34 @@
+[gd_scene load_steps=7 format=3 uid="uid://oucwmrequbwj"]
+
+[ext_resource type="PackedScene" uid="uid://bytcim01dmfj1" path="res://scenes/board.tscn" id="1_57j53"]
+[ext_resource type="Script" path="res://scripts/turn.gd" id="2_j05r8"]
+[ext_resource type="Script" path="res://scripts/place_card.gd" id="3_5q6tl"]
+[ext_resource type="Script" path="res://scripts/move_card.gd" id="4_58mjj"]
+[ext_resource type="Script" path="res://scripts/camera.gd" id="5_86jdi"]
+
+[sub_resource type="FontVariation" id="FontVariation_724ut"]
+
+[node name="Game" type="Node2D"]
+
+[node name="Board" parent="." instance=ExtResource("1_57j53")]
+position = Vector2(125, 79)
+font = SubResource("FontVariation_724ut")
+
+[node name="Card" type="Node" parent="Board"]
+
+[node name="Piece" type="Node" parent="Board/Card"]
+
+[node name="Turn" type="Node" parent="Board"]
+script = ExtResource("2_j05r8")
+
+[node name="PlaceCard" type="Node" parent="Board/Turn"]
+script = ExtResource("3_5q6tl")
+
+[node name="MoveCard" type="Node" parent="Board/Turn"]
+script = ExtResource("4_58mjj")
+
+[node name="Square" type="Node" parent="Board"]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(572, 324)
+script = ExtResource("5_86jdi")
