@@ -10,13 +10,17 @@
 
 [node name="Game" type="Node2D"]
 
+[node name="Deck" type="Node" parent="."]
+
+[node name="Card" type="Node" parent="Deck"]
+
+[node name="Hand" type="Node" parent="Deck"]
+
 [node name="Board" parent="." instance=ExtResource("1_57j53")]
 position = Vector2(125, 79)
 font = SubResource("FontVariation_724ut")
 
-[node name="Card" type="Node" parent="Board"]
-
-[node name="Piece" type="Node" parent="Board/Card"]
+[node name="Piece" type="Node" parent="Board"]
 
 [node name="Turn" type="Node" parent="Board"]
 script = ExtResource("2_j05r8")
