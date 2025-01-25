@@ -48,7 +48,6 @@ func initialize_board() -> void:
 			}
 			squares.append(square)
 			_square_lookup[square["position"]] = square
-
 	queue_redraw()
 
 func add_piece(piece: Dictionary, square: Dictionary) -> bool:

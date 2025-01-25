@@ -1,4 +1,2 @@
 res://scenes/game.tscn
 res://scripts/board.gd
-res://scripts/camera.gd
-res://scripts/turn.gd
