@@ -1,6 +1,7 @@
-[gd_scene load_steps=7 format=3 uid="uid://oucwmrequbwj"]
+[gd_scene load_steps=8 format=3 uid="uid://oucwmrequbwj"]
 
 [ext_resource type="PackedScene" uid="uid://bytcim01dmfj1" path="res://scenes/board.tscn" id="1_57j53"]
+[ext_resource type="Script" path="res://scripts/Board/rules.gd" id="2_8625o"]
 [ext_resource type="Script" path="res://scripts/turn.gd" id="2_j05r8"]
 [ext_resource type="Script" path="res://scripts/Board/place_piece.gd" id="3_5q6tl"]
 [ext_resource type="Script" path="res://scripts/Board/move_piece.gd" id="4_58mjj"]
@@ -25,6 +26,7 @@ font = SubResource("FontVariation_724ut")
 [node name="Square" type="Node" parent="Board"]
 
 [node name="Rules" type="Node" parent="Board"]
+script = ExtResource("2_8625o")
 
 [node name="Turn" type="Node" parent="Board/Rules"]
 script = ExtResource("2_j05r8")

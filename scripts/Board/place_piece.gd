@@ -1,6 +1,7 @@
 class_name PlaceCard
 extends Node
-@onready var board: GameBoard = $"../.."
+@onready var board: GameBoard = $"../../.."
+
 @export var row_allowed: int = 2  # How much row does each play have
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:

@@ -1,6 +1,6 @@
 class_name MoveCard
 extends Node
-@onready var board: GameBoard = $"../.."
+@onready var board: GameBoard = $"../../.."
 
 var piece: Dictionary
 # Called when the node enters the scene tree for the first time.

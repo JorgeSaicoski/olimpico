@@ -2,7 +2,7 @@ extends Node
 
 # Player and game-related variables
 var current_player: String = "a"  # Start with player A
-@onready var board: GameBoard = $".."
+@onready var board: GameBoard = $"../.."
 @onready var place_card: PlaceCard = $PlaceCard
 @onready var move_card: MoveCard = $MoveCard
 
@@ -11,6 +11,8 @@ var current_player: String = "a"  # Start with player A
 @export var player_b_cards_first_turn: int = 4
 @export var player_a_cards_first_turn: int = 2
 @export var moves_per_player: int = 6
+
+
 
 # State tracking
 var cards_played_this_turn: int = 0
