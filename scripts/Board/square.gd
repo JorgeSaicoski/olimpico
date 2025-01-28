@@ -2,7 +2,6 @@ class_name Square extends Node2D
 
 signal square_clicked(square)
 
-# Export variables for the Inspector
 @export var size: int = 64
 @export var is_dark: bool = false
 @export var font: Font
@@ -11,13 +10,12 @@ var board_position: Vector2i
 var chess_position: String
 var piece: Dictionary = {}
 var base_color: Color
+var is_selected: bool = false
 
 func _ready() -> void:
-	# Initialize base color
 	base_color = Color.BLACK if is_dark else Color.WHITE
 	queue_redraw()
 
-# New setup function to initialize after instantiation
 func setup(new_size: int, dark: bool, new_font: Font, pos: Vector2i, chess_pos: String) -> void:
 	size = new_size
 	is_dark = dark
@@ -30,12 +28,17 @@ func setup(new_size: int, dark: bool, new_font: Font, pos: Vector2i, chess_pos: 
 func _draw() -> void:
 	# Draw the square background
 	var rect = Rect2(Vector2.ZERO, Vector2(size, size))
-	draw_rect(rect, base_color)
 	
-	# Draw the piece if one exists
+	# Determine square color based on selection state
+	var square_color = base_color
+	if is_selected:
+		square_color = Color(0.9, 0.7, 0.2, 1.0) # Highlight color for selected square
+	
+	draw_rect(rect, square_color)
+	
+	# Draw piece if it exists
 	if not piece.is_empty():
 		var text_color = get_player_color(piece.get("player", ""))
-		# Center the text better
 		var text = piece.get("name", "")
 		var font_size = 16
 		var text_pos = Vector2(
@@ -52,8 +55,8 @@ func _draw() -> void:
 			font_size,
 			text_color
 		)
-		
-	# Optionally draw the chess position in small text at the corner
+	
+	# Draw chess position
 	var position_font_size = 10
 	draw_string(
 		font,
@@ -95,3 +98,7 @@ func remove_piece() -> Dictionary:
 
 func has_piece() -> bool:
 	return not piece.is_empty()
+
+func set_selected(selected: bool) -> void:
+	is_selected = selected
+	queue_redraw()

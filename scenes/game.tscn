@@ -17,8 +17,6 @@
 
 [node name="Board" parent="." instance=ExtResource("1_57j53")]
 position = Vector2(125, 79)
-board_size = null
-cell_size = null
 font = SubResource("FontVariation_724ut")
 
 [node name="Piece" type="Node" parent="Board"]
