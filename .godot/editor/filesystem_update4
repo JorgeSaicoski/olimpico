@@ -1,4 +1,3 @@
-res://scenes/game.tscn
-res://scenes/square.tscn
-res://scripts/Board/square.gd
 res://scripts/Board/board.gd
+res://scenes/game.tscn
+res://scripts/Piece/piece.gd

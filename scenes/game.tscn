@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://oucwmrequbwj"]
+[gd_scene load_steps=7 format=3 uid="uid://oucwmrequbwj"]
 
 [ext_resource type="PackedScene" uid="uid://bytcim01dmfj1" path="res://scenes/board.tscn" id="1_57j53"]
 [ext_resource type="Script" path="res://scripts/Board/rules.gd" id="2_8625o"]
+[ext_resource type="PackedScene" uid="uid://duywdivmlfmea" path="res://scenes/piece.tscn" id="2_ehvrn"]
 [ext_resource type="PackedScene" uid="uid://dchhvrawiel8g" path="res://scenes/square.tscn" id="3_2tbov"]
 [ext_resource type="Script" path="res://scripts/camera.gd" id="5_86jdi"]
 
@@ -19,7 +20,7 @@
 position = Vector2(125, 79)
 font = SubResource("FontVariation_724ut")
 
-[node name="Piece" type="Node" parent="Board"]
+[node name="Piece" parent="Board" instance=ExtResource("2_ehvrn")]
 
 [node name="Rules" type="Node" parent="Board"]
 script = ExtResource("2_8625o")
