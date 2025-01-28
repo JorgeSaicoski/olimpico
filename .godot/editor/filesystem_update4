@@ -1,5 +1,4 @@
 res://scenes/game.tscn
-res://scripts/Board/rules.gd
-res://scripts/Board/place_piece.gd
-res://scripts/Board/move_piece.gd
-res://scripts/turn.gd
+res://scenes/square.tscn
+res://scripts/Board/square.gd
+res://scripts/Board/board.gd
