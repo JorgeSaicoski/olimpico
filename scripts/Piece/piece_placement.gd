@@ -50,7 +50,7 @@ func try_place_piece(piece_number: int) -> void:
 		var square = get_square_under_mouse(mouse_pos)
 		
 		if square and can_place_piece_at(square):
-			var current_player = get_current_player()
+			var current_player = turn_manager.current_player
 			create_and_place_piece(piece_number, current_player, square)
 
 func get_square_under_mouse(mouse_pos: Vector2) -> Square:
@@ -64,7 +64,7 @@ func can_place_piece_at(square: Square) -> bool:
 	if square.has_piece():
 		return false
 		
-	var current_player = get_current_player()
+	var current_player = turn_manager.current_player
 	var row = square.board_position.y
 	
 	# Player A can only place in first N rows
@@ -105,9 +105,6 @@ func create_and_place_piece(piece_number: int, player: String, square: Square) -
 	square.set_piece(piece)
 	
 	emit_signal("piece_placed", piece, square)
-
-func get_current_player() -> String:
-	return "a" if current_turn % 2 == 1 else "b"
 
 func set_turn(turn: int) -> void:
 	current_turn = turn
