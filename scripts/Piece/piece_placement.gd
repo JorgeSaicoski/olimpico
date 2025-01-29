@@ -2,6 +2,8 @@ class_name PiecePlacement extends Node
 
 signal piece_placed(piece: GamePiece, square: Square)
 
+@onready var rules_manager: GameRules = $"../../RulesManager"
+
 # Piece definitions for each player
 var piece_definitions = {
 	"a": {
@@ -20,6 +22,7 @@ var piece_definitions = {
 
 var board: GameBoard
 var current_turn: int = 1
+var rows_per_player: int = 2  # Default value, can be configured through rules
 
 func _init(game_board: GameBoard) -> void:
 	board = game_board
@@ -60,13 +63,13 @@ func can_place_piece_at(square: Square) -> bool:
 	var current_player = get_current_player()
 	var row = square.board_position.y
 	
-	# Player A can only place in first two rows (0-1)
+	# Player A can only place in first N rows
 	if current_player == "a":
-		return row <= 1
+		return row <= (rows_per_player - 1)
 	
-	# Player B can only place in last two rows (6-7 for 8x8 board)
+	# Player B can only place in last N rows
 	elif current_player == "b":
-		return row >= board.board_size.y - 2
+		return row >= (board.board_size.y - rows_per_player)
 		
 	return false
 
@@ -100,9 +103,10 @@ func create_and_place_piece(piece_number: int, player: String, square: Square) -
 	emit_signal("piece_placed", piece, square)
 
 func get_current_player() -> String:
-	# This should be updated based on your turn management system
-	# For now, let's use a simple system
 	return "a" if current_turn % 2 == 1 else "b"
 
 func set_turn(turn: int) -> void:
 	current_turn = turn
+
+func set_rows_per_player(rows: int) -> void:
+	rows_per_player = rows

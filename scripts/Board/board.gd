@@ -2,7 +2,9 @@ class_name GameBoard extends Node2D
 
 signal piece_placed(piece: GamePiece, square: Square)
 
-@export var board_size: Vector2i = Vector2i(8, 8)
+@onready var rules_manager: GameRules = $RulesManager
+
+@export var board_size: Vector2i = Vector2i(8, 8)  # Default size, can be changed in editor
 @export var cell_size: int = 64
 @export var font: Font
 
@@ -56,6 +58,7 @@ func initialize_board() -> void:
 
 func setup_piece_placement() -> void:
 	piece_placement = PiecePlacement.new(self)
+	piece_placement.set_rows_per_player(rules_manager.placement_rows_per_player)
 	add_child(piece_placement)
 	piece_placement.piece_placed.connect(_on_piece_placed)
 
@@ -86,18 +89,6 @@ func _on_square_clicked(square: Square) -> void:
 func _on_piece_placed(piece: GamePiece, square: Square) -> void:
 	emit_signal("piece_placed", piece, square)
 
-func chess_to_position(chess_notation: String) -> Vector2i:
-	if chess_notation.length() != 2:
-		return Vector2i(-1, -1)
-	
-	var file = chess_notation[0].to_upper().unicode_at(0) - 65 # Convert A-H to 0-7
-	var rank = int(chess_notation[1]) - 1 # Convert 1-8 to 0-7
-	
-	if file < 0 or file >= board_size.y or rank < 0 or rank >= board_size.x:
-		return Vector2i(-1, -1)
-		
-	return Vector2i(rank, file)
-
 func get_square(position: Vector2i) -> Square:
 	return square_lookup.get(position)
 
@@ -106,5 +97,13 @@ func clear_selection() -> void:
 		square_selected.set_selected(false)
 		square_selected = null
 
-func set_turn(turn: int) -> void:
-	piece_placement.set_turn(turn)
+func is_valid_position(position: Vector2i) -> bool:
+	return position.x >= 0 and position.x < board_size.x and \
+		   position.y >= 0 and position.y < board_size.y
+
+func get_board_size() -> Vector2i:
+	return board_size
+
+func set_board_size(new_size: Vector2i) -> void:
+	board_size = new_size
+	initialize_board()  # Reinitialize the board with new size

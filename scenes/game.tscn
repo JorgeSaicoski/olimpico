@@ -1,9 +1,12 @@
-[gd_scene load_steps=7 format=3 uid="uid://oucwmrequbwj"]
+[gd_scene load_steps=10 format=3 uid="uid://oucwmrequbwj"]
 
 [ext_resource type="PackedScene" uid="uid://bytcim01dmfj1" path="res://scenes/board.tscn" id="1_57j53"]
 [ext_resource type="Script" path="res://scripts/Board/rules.gd" id="2_8625o"]
 [ext_resource type="PackedScene" uid="uid://duywdivmlfmea" path="res://scenes/piece.tscn" id="2_ehvrn"]
 [ext_resource type="PackedScene" uid="uid://dchhvrawiel8g" path="res://scenes/square.tscn" id="3_2tbov"]
+[ext_resource type="Script" path="res://scripts/Piece/piece_placement.gd" id="3_y5s34"]
+[ext_resource type="Script" path="res://scripts/Board/turn_manager.gd" id="4_1f3ti"]
+[ext_resource type="Script" path="res://scripts/Piece/piece_movement.gd" id="4_shwej"]
 [ext_resource type="Script" path="res://scripts/camera.gd" id="5_86jdi"]
 
 [sub_resource type="FontVariation" id="FontVariation_724ut"]
@@ -16,24 +19,25 @@
 
 [node name="Hand" type="Node" parent="Deck"]
 
-[node name="Board" parent="." instance=ExtResource("1_57j53")]
+[node name="BoardManager" parent="." instance=ExtResource("1_57j53")]
 position = Vector2(125, 79)
 font = SubResource("FontVariation_724ut")
 
-[node name="Piece" parent="Board" instance=ExtResource("2_ehvrn")]
+[node name="Piece" parent="BoardManager" instance=ExtResource("2_ehvrn")]
 
-[node name="PiecePlacement" type="Node" parent="Board/Piece"]
+[node name="PiecePlacement" type="Node" parent="BoardManager/Piece"]
+script = ExtResource("3_y5s34")
 
-[node name="Rules" type="Node" parent="Board"]
+[node name="PieceMovement" type="Node" parent="BoardManager/Piece"]
+script = ExtResource("4_shwej")
+
+[node name="RulesManager" type="Node" parent="BoardManager"]
 script = ExtResource("2_8625o")
 
-[node name="Turn" type="Node" parent="Board/Rules"]
+[node name="TurnManager" type="Node" parent="BoardManager/RulesManager"]
+script = ExtResource("4_1f3ti")
 
-[node name="PlacePiece" type="Node" parent="Board/Rules/Turn"]
-
-[node name="MovePiece" type="Node" parent="Board/Rules/Turn"]
-
-[node name="Square" parent="Board" instance=ExtResource("3_2tbov")]
+[node name="Square" parent="BoardManager" instance=ExtResource("3_2tbov")]
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(572, 324)
