@@ -13,7 +13,9 @@ var chess_position: String
 var piece: GamePiece = null
 var base_color: Color
 var is_selected: bool = false
+var is_highlighted: bool = false
 var highlight_color: Color = Color(0.9, 0.7, 0.2, 1.0)
+var valid_move_color: Color = Color(0.2, 0.8, 0.3, 0.5)  # Semi-transparent green for valid moves
 
 func _ready() -> void:
 	base_color = Color.BLACK if is_dark else Color.WHITE
@@ -31,16 +33,21 @@ func setup(new_size: int, dark: bool, new_font: Font, pos: Vector2i, chess_pos: 
 func _draw() -> void:
 	# Draw the square background
 	var rect = Rect2(Vector2.ZERO, Vector2(size, size))
-	
-	# Determine square color based on selection state
-	var square_color = highlight_color if is_selected else base_color
+
+	# Determine square color based on state
+	var square_color = base_color
+	if is_selected:
+		square_color = highlight_color
+	elif is_highlighted:
+		square_color = valid_move_color
+
 	draw_rect(rect, square_color)
-	
+
 	# Draw piece if it exists
 	if has_piece():
 		var text_color = get_player_color(piece.player)
 		var piece_text = piece.piece_name
-		
+
 		# Draw piece name
 		var font_size = 16
 		var text_pos = Vector2(
@@ -65,7 +72,7 @@ func _draw() -> void:
 			size / 2 - font.get_string_size(hp_text, HORIZONTAL_ALIGNMENT_CENTER, -1, hp_font_size).x / 2,
 			size / 2 + hp_font_size
 		)
-		
+
 		draw_string(
 			font,
 			hp_pos,
@@ -75,7 +82,7 @@ func _draw() -> void:
 			hp_font_size,
 			text_color
 		)
-	
+
 	# Draw chess position
 	var position_font_size = 10
 	draw_string(
@@ -113,10 +120,10 @@ func set_piece(new_piece: GamePiece) -> bool:
 			piece.piece_hp_changed.disconnect(_on_piece_hp_changed)
 		if piece.piece_died.is_connected(_on_piece_died):
 			piece.piece_died.disconnect(_on_piece_died)
-	
+
 	var old_piece = piece
 	piece = new_piece
-	
+
 	if piece != null:
 		# Connect new piece signals
 		piece.piece_hp_changed.connect(_on_piece_hp_changed)
@@ -126,7 +133,7 @@ func set_piece(new_piece: GamePiece) -> bool:
 		piece_placed.emit(piece)
 	elif old_piece != null:
 		piece_removed.emit(old_piece)
-	
+
 	queue_redraw()
 	return true
 
@@ -149,6 +156,10 @@ func has_piece() -> bool:
 
 func set_selected(selected: bool) -> void:
 	is_selected = selected
+	queue_redraw()
+
+func set_highlighted(highlighted: bool) -> void:
+	is_highlighted = highlighted
 	queue_redraw()
 
 func _on_piece_hp_changed(_current_hp: int, _max_hp: int) -> void:

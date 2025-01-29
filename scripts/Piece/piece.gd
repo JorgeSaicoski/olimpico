@@ -16,6 +16,10 @@ signal piece_died()
 @export var movement_cost: int = 1  # Power cost per square moved
 @export var attack_cost: int = 4    # Power cost to perform an attack
 
+@export var is_range: bool = false
+@export var range: int = 4
+
+
 # Current state
 var current_hp: int
 var current_position: Vector2i

@@ -1,8 +1,11 @@
 class_name GameBoard extends Node2D
 
 signal piece_placed(piece: GamePiece, square: Square)
+signal piece_moved(piece: GamePiece, from_pos: Vector2i, to_pos: Vector2i)
+signal piece_removed(piece: GamePiece)
 
 @onready var rules_manager: GameRules = $RulesManager
+@onready var turn_manager: TurnManager = $RulesManager/TurnManager
 
 @export var board_size: Vector2i = Vector2i(8, 8)  # Default size, can be changed in editor
 @export var cell_size: int = 64
@@ -12,10 +15,17 @@ var squares: Array[Square] = []
 var square_lookup: Dictionary = {}
 var square_selected: Square = null
 var piece_placement: PiecePlacement
+var piece_movement: PieceMovement
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed:
+		if event.keycode == KEY_ENTER or event.keycode == KEY_KP_ENTER:
+			_on_enter_pressed()
 
 func _ready() -> void:
 	initialize_board()
 	setup_piece_placement()
+	setup_piece_movement()
 
 func initialize_board() -> void:
 	# Clear existing squares if any
@@ -61,34 +71,70 @@ func setup_piece_placement() -> void:
 	piece_placement.set_rows_per_player(rules_manager.placement_rows_per_player)
 	add_child(piece_placement)
 	piece_placement.piece_placed.connect(_on_piece_placed)
+	
+func setup_piece_movement() -> void:
+	piece_movement = PieceMovement.new(self)
+	add_child(piece_movement)
 
 func _on_square_clicked(square: Square) -> void:
+	# Check if it's currently a movement phase
+	if not turn_manager.can_move():
+		return
+		
 	if square_selected == null:
-		# Only allow selection of squares with pieces
-		if square.has_piece():
+		# Only allow selection of squares with pieces belonging to current player
+		if square.has_piece() and square.piece.player == turn_manager.current_player:
 			square_selected = square
 			square.set_selected(true)
+			highlight_valid_moves(square.piece)
 	else:
 		if square == square_selected:
 			# Deselect if clicking the same square
-			square_selected.set_selected(false)
-			square_selected = null
+			clear_selection()
 		elif not square.has_piece():
-			# Move piece to empty square
-			var piece = square_selected.remove_piece()
-			square.set_piece(piece)
-			square_selected.set_selected(false)
-			square_selected = null
+			# Try to move piece to empty square
+			try_move_piece(square_selected.piece, square.board_position)
 		else:
 			# Clicking a different square with a piece
-			square_selected.set_selected(false)
-			if square.has_piece():
-				square.set_selected(true)
+			clear_selection()
+			if square.has_piece() and square.piece.player == turn_manager.current_player:
 				square_selected = square
+				square.set_selected(true)
+				highlight_valid_moves(square.piece)
+
+func try_move_piece(piece: GamePiece, target_pos: Vector2i) -> void:
+	# First check if the move is valid
+	var move_validation = piece_movement.is_valid_move(piece, target_pos)
+	if not move_validation.valid:
+		# Handle invalid move
+		clear_selection()
+		return
+		
+	# Calculate power cost
+	var power_cost = piece_movement.calculate_move_cost(piece, target_pos)
+
+	# Try to execute move
+	if piece_movement.execute_move(piece, target_pos):
+		emit_signal("piece_moved", piece, piece.current_position, target_pos)
+		clear_selection()
+	else:
+		# Handle failed move
+		clear_selection()
+
+func highlight_valid_moves(piece: GamePiece) -> void:
+	var possible_moves = piece_movement.get_possible_moves(piece)
+	for pos in possible_moves:
+		var square = get_square(pos)
+		if square:
+			square.set_highlighted(true)
 
 func _on_piece_placed(piece: GamePiece, square: Square) -> void:
 	emit_signal("piece_placed", piece, square)
 
+func _on_enter_pressed() -> void:
+	if not turn_manager.can_place_card():
+		turn_manager.next_phase()
+	
 func get_square(position: Vector2i) -> Square:
 	return square_lookup.get(position)
 

@@ -18,8 +18,19 @@ var current_phase: Phase = Phase.PLACE_KING
 @onready var rules: GameRules = $".."
 var cards_placed_this_turn: int = 0
 var total_cards_placed: Dictionary = {"a": 1, "b": 1}  # Start at 1 to account for kings
+var piece_placement: PiecePlacement
+@onready var board_manager: GameBoard = $"../.."
 
 func _ready() -> void:
+	# Wait for board manager to be ready
+	await board_manager.ready
+	
+	# Get piece placement reference and connect signals
+	piece_placement = board_manager.piece_placement
+	if piece_placement:
+		piece_placement.piece_placed.connect(_on_piece_placed)
+		piece_placement.set_turn(current_turn)  # Initialize turn number
+	
 	current_player = rules.first_player
 	start_turn()
 
@@ -55,6 +66,7 @@ func end_turn() -> void:
 func next_phase() -> void:
 	match current_phase:
 		Phase.PLACE_KING:
+			print("PLACE_KING")
 			# After both players place kings, move to next turn
 			if current_player == "b":
 				end_turn()
@@ -63,6 +75,7 @@ func next_phase() -> void:
 				emit_signal("turn_started", current_turn, current_player)
 				
 		Phase.PLACE_CARDS:
+			print("PLACE_CARDS")
 			# In turn 2, after placing 4 cards
 			if cards_placed_this_turn >= 4:
 				if current_player == "b":
@@ -73,14 +86,17 @@ func next_phase() -> void:
 					emit_signal("turn_started", current_turn, current_player)
 					
 		Phase.MOVEMENT:
+			print("MOVEMENT")
 			current_phase = Phase.PLACE_CARD
 			emit_signal("phase_changed", Phase.keys()[current_phase])
 			
 		Phase.PLACE_CARD:
+			print("PLACE_CARD")
 			current_phase = Phase.ATTACK
 			emit_signal("phase_changed", Phase.keys()[current_phase])
 			
 		Phase.ATTACK:
+			print("ATTACK")
 			if current_player == "b":
 				end_turn()
 			else:
@@ -93,21 +109,30 @@ func can_place_card() -> bool:
 	if current_turn == 1:
 		# Only kings can be placed
 		return current_phase == Phase.PLACE_KING
+
 	elif current_turn == 2:
 		# Can place 4 cards
 		return current_phase == Phase.PLACE_CARDS and cards_placed_this_turn < 4
 	else:
 		# Can place 1 card during PLACE_CARD phase if haven't reached total limit
-		return current_phase == Phase.PLACE_CARD and total_cards_placed[current_player] < 15
+		return current_phase == Phase.PLACE_CARD and total_cards_placed[current_player] < 15 and cards_placed_this_turn == 0
+
+func _on_piece_placed(_piece: GamePiece, _square: Square) -> void:
+	# Auto advance phase if needed
+	if current_phase == Phase.PLACE_KING:
+		next_phase()
+	elif current_turn == 2:
+		register_card_placed()
+		if cards_placed_this_turn >= rules.cards_first_turn:
+			next_phase()
+	elif current_turn > 2:
+		register_card_placed()
+		next_phase()
 
 func register_card_placed() -> void:
 	cards_placed_this_turn += 1
 	total_cards_placed[current_player] += 1
-	
-	if current_turn == 2 and cards_placed_this_turn >= 4:
-		next_phase()
-	elif current_turn > 2 and current_phase == Phase.PLACE_CARD:
-		next_phase()
+	print("Cards placed this turn: ", cards_placed_this_turn)
 
 func get_remaining_cards() -> int:
 	return 15 - total_cards_placed[current_player]

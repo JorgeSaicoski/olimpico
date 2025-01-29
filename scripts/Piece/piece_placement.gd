@@ -2,7 +2,8 @@ class_name PiecePlacement extends Node
 
 signal piece_placed(piece: GamePiece, square: Square)
 
-@onready var rules_manager: GameRules = $"../../RulesManager"
+var rules_manager: GameRules
+var turn_manager: TurnManager
 
 # Piece definitions for each player
 var piece_definitions = {
@@ -26,6 +27,8 @@ var rows_per_player: int = 2  # Default value, can be configured through rules
 
 func _init(game_board: GameBoard) -> void:
 	board = game_board
+	rules_manager = game_board.rules_manager
+	turn_manager = game_board.turn_manager
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed:
@@ -42,12 +45,13 @@ func _input(event: InputEvent) -> void:
 			try_place_piece(piece_number)
 
 func try_place_piece(piece_number: int) -> void:
-	var mouse_pos = board.get_local_mouse_position()
-	var square = get_square_under_mouse(mouse_pos)
-	
-	if square and can_place_piece_at(square):
-		var current_player = get_current_player()
-		create_and_place_piece(piece_number, current_player, square)
+	if turn_manager.can_place_card():
+		var mouse_pos = board.get_local_mouse_position()
+		var square = get_square_under_mouse(mouse_pos)
+		
+		if square and can_place_piece_at(square):
+			var current_player = get_current_player()
+			create_and_place_piece(piece_number, current_player, square)
 
 func get_square_under_mouse(mouse_pos: Vector2) -> Square:
 	var board_pos = Vector2i(

@@ -1,6 +1,6 @@
 res://scenes/game.tscn
 res://scripts/Board/board.gd
-res://scripts/Piece/piece_placement.gd
-res://scenes/piece.tscn
 res://scripts/Board/turn_manager.gd
+res://scripts/Piece/piece_placement.gd
+res://scripts/Board/square.gd
 res://scripts/Piece/piece_movement.gd

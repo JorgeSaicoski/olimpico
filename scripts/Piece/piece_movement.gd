@@ -24,10 +24,6 @@ func is_valid_move(piece: GamePiece, target_pos: Vector2i) -> Dictionary:
 	if target_square.has_piece():
 		return {"valid": false, "reason": "Square is occupied"}
 		
-	# Check if piece has already moved this turn
-	if piece.moves_this_turn.size() > 0 and not board.rules_manager.can_move_and_attack:
-		return {"valid": false, "reason": "Piece has already moved this turn"}
-		
 	return {"valid": true, "reason": ""}
 
 # Execute the movement (assumes validation is already done)
@@ -39,7 +35,7 @@ func execute_move(piece: GamePiece, target_pos: Vector2i) -> bool:
 	old_square.remove_piece()
 	
 	# Update piece position and place in new square
-	piece.move_to(target_pos, board.rules_manager.current_turn)
+	piece.move_to(target_pos, board.turn_manager.current_turn)
 	new_square.set_piece(piece)
 	
 	movement_completed.emit(piece, target_pos)
