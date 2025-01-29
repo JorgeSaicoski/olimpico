@@ -1,3 +1,4 @@
-res://scripts/Board/board.gd
 res://scenes/game.tscn
-res://scripts/Piece/piece.gd
+res://scripts/Board/board.gd
+res://scripts/Piece/piece_placement.gd
+res://scenes/piece.tscn

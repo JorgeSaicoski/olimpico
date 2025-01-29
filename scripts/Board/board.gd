@@ -1,5 +1,7 @@
 class_name GameBoard extends Node2D
 
+signal piece_placed(piece: GamePiece, square: Square)
+
 @export var board_size: Vector2i = Vector2i(8, 8)
 @export var cell_size: int = 64
 @export var font: Font
@@ -7,9 +9,11 @@ class_name GameBoard extends Node2D
 var squares: Array[Square] = []
 var square_lookup: Dictionary = {}
 var square_selected: Square = null
+var piece_placement: PiecePlacement
 
 func _ready() -> void:
 	initialize_board()
+	setup_piece_placement()
 
 func initialize_board() -> void:
 	# Clear existing squares if any
@@ -50,6 +54,11 @@ func initialize_board() -> void:
 			squares.append(square)
 			square_lookup[Vector2i(col, row)] = square
 
+func setup_piece_placement() -> void:
+	piece_placement = PiecePlacement.new(self)
+	add_child(piece_placement)
+	piece_placement.piece_placed.connect(_on_piece_placed)
+
 func _on_square_clicked(square: Square) -> void:
 	if square_selected == null:
 		# Only allow selection of squares with pieces
@@ -74,6 +83,9 @@ func _on_square_clicked(square: Square) -> void:
 				square.set_selected(true)
 				square_selected = square
 
+func _on_piece_placed(piece: GamePiece, square: Square) -> void:
+	emit_signal("piece_placed", piece, square)
+
 func chess_to_position(chess_notation: String) -> Vector2i:
 	if chess_notation.length() != 2:
 		return Vector2i(-1, -1)
@@ -93,3 +105,6 @@ func clear_selection() -> void:
 	if square_selected:
 		square_selected.set_selected(false)
 		square_selected = null
+
+func set_turn(turn: int) -> void:
+	piece_placement.set_turn(turn)

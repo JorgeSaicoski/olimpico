@@ -22,6 +22,8 @@ font = SubResource("FontVariation_724ut")
 
 [node name="Piece" parent="Board" instance=ExtResource("2_ehvrn")]
 
+[node name="PiecePlacement" type="Node" parent="Board/Piece"]
+
 [node name="Rules" type="Node" parent="Board"]
 script = ExtResource("2_8625o")
 
